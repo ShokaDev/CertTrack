@@ -55,7 +55,7 @@
                         </a>
                     </li>
                     <li class="nav-links">
-                        <a href="todo.php">
+                        <a href="sertifikat.php">
                             <i class='bx bx-task icons'></i>
                             <span class="text nav-text">ToDo List</span>
                         </a>

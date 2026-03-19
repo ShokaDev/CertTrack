@@ -37,6 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Tutup koneksi
 $conn->close();
-header("Location: ../views/todo.php");
+header("Location: ../views/sertifikat.php");
 exit();
 ?>

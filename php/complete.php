@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
     $conn->close();
 
-    header("Location: ../views/todo.php"); // arahkan balik ke halaman ToDo
+    header("Location: ../views/sertifikat.php"); // arahkan balik ke halaman ToDo
     exit();
 }
 ?>

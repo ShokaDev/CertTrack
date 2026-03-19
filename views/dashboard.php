@@ -58,7 +58,7 @@
                         </a>
                     </li>
                     <li class="nav-links">
-                        <a href="todo.php">
+                        <a href="sertifikat.php">
                             <i class='bx bx-task icons'></i>
                             <span class="text nav-text">ToDo List</span>
                         </a>
@@ -104,7 +104,7 @@
         </div>
 
         <div class="cards">
-            <a href="todo.php">
+            <a href="sertifikat.php">
             <div class="card">
                 <div class="card-content">
                         <h3>Banyaknya Tugas</h3>
@@ -114,7 +114,7 @@
                 </div>
             </a>
 
-            <a href="todo.php">
+            <a href="sertifikat.php">
             <div class="card">
                 <div class="card-content">
                     <h3>Tugas Selesai</h3>
@@ -124,7 +124,7 @@
             </div>
             </a>
 
-            <a href="todo.php">
+            <a href="sertifikat.php">
             <div class="card">
                 <div class="card-content">
                     <h3>Tugas Belum Selesai</h3>

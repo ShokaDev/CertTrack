@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db   = "administrasi-barang";
+$db   = "sertifikat_db";
 
 $conn = mysqli_connect($host, $user, $pass, $db);
 if (!$conn) {
