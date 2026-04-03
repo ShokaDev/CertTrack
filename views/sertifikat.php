@@ -1,237 +1,279 @@
 <?php
-    session_start();
-    include ('../config/koneksi.php');
-    
-    // Ngambil semua tugas
-    // $_SESSION['dibuat_oleh'] = $user['id'];     
-    $tugas = mysqli_query($conn, "SELECT tasks.*, users.username 
-                                FROM tasks 
-                                JOIN users ON tasks.dibuat_oleh = users.id 
-                                ORDER BY tasks.id DESC");
+session_start();
+include('../config/koneksi.php');
 
-
-
+$query = mysqli_query($conn, "
+SELECT sertifikat.*, users.nama, jenis_sertifikat.nama AS jenis
+FROM sertifikat
+JOIN users ON sertifikat.user_id = users.id
+JOIN jenis_sertifikat ON sertifikat.jenis_id = jenis_sertifikat.id
+ORDER BY tanggal_expired ASC
+");
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToDo List</title>
+<meta charset="UTF-8">
+<title>Certificate</title>
 
-    <link rel="stylesheet" href="../css/style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<link rel="stylesheet" href="../css/style.css">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+<style>
+.table-container{
+    width: 100%;
+    overflow-x: auto;
+    margin-top:20px;
+    background:#fff;
+    border-radius:10px;
+    padding:20px;
+}
+
+table{
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    width:100%;
+    border-collapse:collapse;
+}
+
+th, td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+    padding: 14px 16px;
+    border-right: 1px solid #e5e7eb;
+}
+
+th:last-child, td:last-child {
+    border-right: none;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+body.dark tbody tr:nth-child(even) {
+    background-color: #2a2b2c;
+}
+
+body.dark tbody tr:nth-child(odd) {
+    background-color: #242526;
+}
+
+tbody tr:hover {
+    background-color: #e0e7ff;
+    transition: 0.2s;
+}
+
+body.dark tbody tr:hover {
+    background-color: #3a3b3c;
+}
+th {
+    cursor:pointer;
+    background-color: #f1f5f9;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.status {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status.expired {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.status.expired {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.status.soon {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.active{background:#dcfce7;color:green}
+.warning{background:#fef3c7;color:orange}
+.expired{background:#fee2e2;color:red}
+
+.search-box{
+    padding:8px 15px;
+    border-radius:20px;
+    border:1px solid #ccc;
+    width:250px;
+}
+</style>
+
 </head>
+
 <body>
-    <div class="container">
-    <nav class="sidebar close">
-        <header>
-            <div class="image-text">
-                <span class="image">
-                    <img src="../img/profil.jpg" alt="logo">
-                </span>
 
-                <div class="text header-text">
-                    <span class="name">
-                        <?php echo $_SESSION['username']; ?>
-                    </span>
-                    <span class="profession">
-                        <?php echo $_SESSION['role']; ?>
-                    </span>
-                </div>
-            </div>
-            <!-- <hr class="line"> -->
+<div class="container">
 
-            <i class='bx bx-chevron-right toggle'></i>
-        </header>
-
-        <div class="menu-bar">
-            <div class="menu">
-                <ul class="menu-links">
-                    <li class="nav-links">
-                        <a href="dashboard.php">
-                            <i class='bx bxs-dashboard icons'></i> 
-                            <span class="text nav-text">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-links">
-                        <a href="sertifikat.php" class="active">
-                            <i class='bx bx-task icons'></i>
-                            <span class="text nav-text">ToDo List</span>
-                        </a>
-                    </li>
-                    <li class="nav-links">
-                        <a href="users.php">
-                            <i class='bx bx-user icons'></i>
-                            <span class="text nav-text">Users</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        
-            <div class="bottom-content">
-                <li class="nav-links">
-                    <a href="../php/logout.php">
-                        <i class='bx bx-log-out icons'></i>
-                        <span class="text nav-text">Log Out</span>
-                    </a>
-                </li>
-                <li class="mode">
-                    <!-- <div class="moon-sun">
-                        <i class='bx bx-moon icons moon'></i>
-                        <i class='bx bx-sun icons sun'></i>
-                    </div> -->
-                    <div class="toggle-switch">
-                        <span class="switch"></span>
-                    </div>
-                    <span class="mode-text text">Dark Mode</span>
-                </li>
+<!-- SIDEBAR (TETAP) -->
+<nav class="sidebar close">
+    <header>
+        <div class="image-text">
+            <span class="image">
+                <img src="../img/profil.jpg">
+            </span>
+            <div class="text header-text">
+                <span class="name"><?= $_SESSION['username']; ?></span>
+                <span class="profession"><?= $_SESSION['role']; ?></span>
             </div>
         </div>
-    </nav>
+        <i class='bx bx-chevron-right toggle'></i>
+    </header>
 
-    <!-- Main Dashboard Content -->
-    <section class="main todo-main">
-        <h1>To Do</h1>
-        <hr class="line">
-        <div class="form-tambah">
-            <ul class="list-ul">
-                <li><a href="#" class="filter-link active" data-filter="all">All ToDo</a></li>
-                <li><a href="#" class="filter-link" data-filter="pending">Pending</a></li>
-                <li><a href="#" class="filter-link" data-filter="done">Completed</a></li>
-            </ul>
+    <div class="menu-bar">
+        <ul class="menu-links">
+            <li class="nav-links">
+                <a href="dashboard.php">
+                    <i class='bx bxs-dashboard icons'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-links">
+                <a href="#" class="active">
+                    <i class='bx bx-task icons'></i>
+                    <span class="text">Certificates</span>
+                </a>
+            </li>
+            <li class="nav-links">
+                <a href="users.php">
+                    <i class='bx bx-user icons'></i>
+                    <span class="text">Users</span>
+                </a>
+            </li>
+        </ul>
 
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'Admin') : ?>
-                <button id="add-task">Tambah</button>
-            <?php endif; ?>
-
-
+        <div class="bottom-content">
+            <a href="../php/logout.php">
+                <i class='bx bx-log-out icons'></i>
+                <span class="text">Logout</span>
+            </a>
         </div>
+    </div>
+</nav>
 
-        <div class="add-task-popup hidden" id="add-task-popup">
-            <div class="popup-model">
-                <form action="../php/tambah.php" method="POST">
-                    <div class="header-popup">
-                        <h2>Buat Tugas Baru</h2>
-                        <button id="close-Popup" class="close"><i data-feather="x"></i></button>
-                    </div>
-                    <hr class="line">
+<!-- MAIN -->
+<section class="main">
 
-                    <label for="judul"><strong>Judul</strong></label> <br>
-                    <input type="text" name="judul" id="judul" required autocomplete="none" placeholder="Masukkan judul tugas">
-                    <br>
+<div style="display:flex;justify-content:space-between;align-items:center;">
+    <h1>Certificates</h1>
 
-                    <label for="deskripsi"><strong>Deskripsi</strong></label> <br>
-                    <textarea name="deskripsi" id="deskripsi" placeholder="Penjelasan..."></textarea>
-                    <br>
+    <!-- SEARCH REALTIME -->
+    <input type="text" id="searchInput" class="search-box" placeholder="Search operator...">
+</div>
 
-                    <div class="flex">
-                        <div class="space">
-                            <label for="prioritas"><strong>Prioritas = </strong></label>
-                            <select name="prioritas" id="prioritas" required>
-                                <option value="low">Rendah</option>
-                                <option value="medium" selected>Menengah</option>
-                                <option value="high">Tinggi</option>
-                            </select>
+<hr class="line">
 
-                            <!-- <?php session_start(); ?> -->
-                            <input type="hidden" name="dibuat_oleh" value="<?= $_SESSION['user_id'] ?>">
+<div class="table-container">
 
-                            </div>
-                        <br>
-    
-                        <div class="space">
-                            <label for="deadline"><strong>Deadline = </strong></label>
-                            <input type="datetime-local" name="deadline" id="deadline">
-                        </div>
-                        <br>
-                    </div>
+<table id="certTable">
 
-                    <div class="save-task">
-                        <button type="submit" name="submit" class="add-task">Tambah Tugas</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<thead>
+<tr>
+<th onclick="sortTable(0)">Operator ⬍</th>
+<th onclick="sortTable(1)">Certificate ⬍</th>
+<th onclick="sortTable(2)">Valid ⬍</th>
+<th onclick="sortTable(3)">Expired ⬍</th>
+<th>Status</th>
+</tr>
+</thead>
 
+<tbody>
 
-        <?php if (mysqli_num_rows($tugas) > 0) : ?>
-            <ul class="list-tugas">
-                <!-- Mulai dari sini itu menampilan semua isi dalam table Tasks -->
-                <?php while ($row = mysqli_fetch_assoc($tugas)) : ?>
-                    <li class="task <?= $row['status'] == 'done' ? 'status-done' : 'status-pending' ?>">
-                        <div class="header-task">
-                                <!-- Judul tugas -->
-                                <?= htmlspecialchars($row['judul']) ?>
-                            <div class="todo-item">
-                                <div class="dibuat-oleh">
-                                    <p>
-                                        <i class='bx  bxs-user'  ></i> 
-                                        <?= htmlspecialchars($row['username']) ?> 
-                                    </p>
-                                </div>
+<?php while($row = mysqli_fetch_assoc($query)){
 
-                                <button class="hamburger-btn"><i data-feather="menu"></i></button>
-                                <div class="hamburger-popup hidden">
-                                    <ul>
-                                        <!-- <li><a href="../php/edit.php?id=<?= $row['id'] ?>">✏️ Edit</a></li> -->
-                                        <li><a href="../php/hapus.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin ingin menghapus?')"><i class='bx  bx-trash'  ></i>  Hapus</a></li>
-                                    </ul>
-                                </div>
-                            </div>
+$today = date("Y-m-d");
+$diff = (strtotime($row['tanggal_expired']) - strtotime($today)) / 86400;
 
-                        </div>
-                        <hr class="line">
+if($diff < 0){
+    $status="Expired";
+    $class="expired";
+}elseif($diff <=14){
+    $status="Expiring Soon";
+    $class="warning";
+}else{
+    $status="Active";
+    $class="active";
+}
+?>
 
-                        <!-- deskripsi tugas -->
-                        <div class="body-task">
-                            <?= htmlspecialchars($row['deskripsi']) ?>
-                        </div>
+<tr>
+<td><?= $row['nama'] ?></td>
+<td><?= $row['jenis'] ?></td>
+<td><?= $row['tanggal_berlaku'] ?></td>
+<td><?= $row['tanggal_expired'] ?></td>
+<td><span class="status <?= $class ?>"><?= $status ?></span></td>
+</tr>
 
-                        <div class="footer-task">
-                            <!-- Dibuat Oleh dan tombol nyatain selesai nya -->
-                            <div class="center">
-                                <div class="status">
-                                    <?= $row['status'] == 'done' ? 'Selesai' : 'Belum Selesai' ?>
-                                </div>
-                                <div class="prioritas">
-                                    <?= $row['prioritas'] == 'low' ? 'Low' : ($row['prioritas'] == 'medium' ? 'Medium' : 'High') ?>
-                                </div>
-                            </div>
+<?php } ?>
 
-                            <div class="center">
-                                <div class="deadline">
-                                    <?= htmlspecialchars($row['deadline']) ?> 
-                                </div>
-                                <?php if ($row['status'] == 'pending') : ?>
-                                    <form method="POST" action="../php/complete.php">
-                                        <input type="hidden" name="task_id" value="<?= $row['id']; ?>">
-                                        <button type="submit" id="done">Selesaikan</button>
-                                    </form>
-                                <?php else : ?>
-                                    <!-- <p class="status-done">✅ Selesai</p>   -->
-                                <?php endif; ?>
+</tbody>
+</table>
 
-                            </div>
-                        </div>
-                    </li>
-                <?php endwhile; ?>
-            </ul>
-        <?php else : ?>
-            <p>Belum ada tugas.</p>
-        <?php endif; ?>
-        
-    </section>
-    <script src="../js/script.js"></script>
-    <script src="../js/add-task.js"></script>
-    <script src="../js/filter-todo.js"></script>
-    <script src="../js/hamburger-popup.js"></script>                                                                     
+</div>
 
-    <!-- Icon data feather   -->
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script>
-        feather.replace();
-    </script>
+</section>
+
+</div>
+
+<!-- 🔥 SEARCH REALTIME -->
+<script>
+document.getElementById("searchInput").addEventListener("keyup", function(){
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#certTable tbody tr");
+
+    rows.forEach(row=>{
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+</script>
+
+<!-- 🔥 SORT -->
+<script>
+let sortDir = {};
+
+function sortTable(col){
+    const table = document.getElementById("certTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.rows);
+
+    sortDir[col] = !sortDir[col];
+
+    rows.sort((a,b)=>{
+        let A = a.cells[col].innerText.trim();
+        let B = b.cells[col].innerText.trim();
+
+        if(col==2||col==3){
+            A = new Date(A);
+            B = new Date(B);
+        }
+
+        if(A < B) return sortDir[col] ? -1 : 1;
+        if(A > B) return sortDir[col] ? 1 : -1;
+        return 0;
+    });
+
+    tbody.innerHTML = "";
+    rows.forEach(row=>tbody.appendChild(row));
+}
+</script>
+
 </body>
 </html>

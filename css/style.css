@@ -326,13 +326,14 @@ body.dark .toggle-switch .switch {
     margin-left: 250px;
     padding: 20px 30px;
     transition: var(--tran-05);
-    height: 100vh;
-    /* width: 100%; */
-    /* width: 100vh; */
+    min-height: 100vh;
+    width: calc(100% - 250px);
+    padding: 30px 40px;
 }
 
 .sidebar.close ~ .main {
     margin-left: 88px;
+    width: calc(100% - 88px);
 }
 
 .main h1 {
